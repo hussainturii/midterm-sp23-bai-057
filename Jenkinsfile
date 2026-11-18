@@ -58,11 +58,18 @@ pipeline {
 
     post {
         always {
-            emailext(
-                to: 'qasimalik@gmail.com',
-                subject: "${currentBuild.currentResult}: ${STUDENT_ID} #${env.BUILD_NUMBER}",
-                body: "${STUDENT_ID} Jenkins build ${env.BUILD_NUMBER}: ${currentBuild.currentResult}. ${env.BUILD_URL}"
-            )
+            script {
+                def authorEmail = sh(script: "git log -1 --format='%ae'", returnStdout: true).trim()
+                def recipients = ['qasimalik@gmail.com']
+                if (authorEmail ==~ /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/) {
+                    recipients << authorEmail
+                }
+                emailext(
+                    to: recipients.unique().join(','),
+                    subject: "${currentBuild.currentResult}: ${STUDENT_ID} #${env.BUILD_NUMBER}",
+                    body: "${STUDENT_ID} Jenkins build ${env.BUILD_NUMBER}: ${currentBuild.currentResult}. ${env.BUILD_URL}"
+                )
+            }
         }
     }
 }
