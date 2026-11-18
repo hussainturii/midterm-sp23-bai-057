@@ -24,7 +24,7 @@ pipeline {
         stage('Retrain and test') {
             steps {
                 sh '''#!/bin/sh
-                    docker run --rm --user "$(id -u):$(id -g)" \\
+                    docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp -e PIP_CACHE_DIR=/tmp \\
                       -v "$WORKSPACE:/app" -w /app python:3.12-slim sh -c \\
                       'pip install --no-cache-dir -r requirements.txt && python train.py && python -m unittest discover -s tests -v'
                 '''
