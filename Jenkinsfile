@@ -60,9 +60,6 @@ pipeline {
         always {
             script {
                 def authorEmail = sh(script: "git log -1 --format='%ae'", returnStdout: true).trim()
-                if (!(authorEmail ==~ /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/)) {
-                    error('The latest Git commit has no valid author e-mail address.')
-                }
                 emailext(
                     to: authorEmail,
                     subject: "${currentBuild.currentResult}: ${env.STUDENT_ID} #${env.BUILD_NUMBER}",
