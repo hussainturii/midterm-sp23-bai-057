@@ -40,16 +40,6 @@ pipeline {
             }
         }
 
-        stage('Publish image') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
-                    sh 'echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USER" --password-stdin'
-                    sh 'docker push "$IMAGE"'
-                    sh 'docker logout'
-                }
-            }
-        }
-
         stage('Deploy on EC2') {
             steps {
                 sh '''#!/bin/sh
