@@ -49,7 +49,7 @@ def main():
     metrics = {
         'student_id': config['student_id'], 'accuracy': round(accuracy, 6),
         'training_rows': int(len(df)), 'model_version': digest[:12],
-        'dataset_sha256': digest, 'git_sha': build_sha,
+        'git_sha': build_sha,
     }
     Path('artifacts').mkdir(exist_ok=True)
     joblib.dump({'model': model, 'features': config['features']}, 'artifacts/model.joblib')
