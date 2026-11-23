@@ -22,7 +22,7 @@ class ApiTests(unittest.TestCase):
         joblib.dump({'model': model, 'features': ['soil_deficit', 'heat_stress', 'flow_variance', 'pump_age']}, artifacts / 'model.joblib')
         (artifacts / 'metrics.json').write_text(json.dumps({
             'student_id': 'SP23-BAI-057', 'accuracy': 0.9, 'training_rows': 300,
-            'model_version': 'abc123', 'git_sha': 'deadbeef'
+            'model_version': 'abc123', 'dataset_sha256': 'abc123', 'git_sha': 'deadbeef'
         }))
         self.path_patch = patch.object(app, 'Path', side_effect=lambda value: self.root / value)
         self.path_patch.start()
@@ -35,7 +35,7 @@ class ApiTests(unittest.TestCase):
     def test_metrics_has_required_contract(self):
         response = self.client.get('/metrics')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(set(response.json()), {'student_id', 'accuracy', 'training_rows', 'model_version', 'git_sha'})
+        self.assertEqual(set(response.json()), {'student_id', 'accuracy', 'training_rows', 'model_version', 'dataset_sha256', 'git_sha'})
         self.assertEqual(response.json()['student_id'], 'SP23-BAI-057')
 
     def test_predict_accepts_records(self):

@@ -54,6 +54,17 @@ pipeline {
                 '''
             }
         }
+        stage('Verify deployed model') {
+            steps {
+                sh '''docker run --rm --network host -e EXPECTED_SHA="$GIT_SHA" \\
+                  -v "$WORKSPACE/tests:/tests:ro" "$IMAGE" python /tests/verify_deployment.py'''
+            }
+        }
+        stage('Publish Docker Hub image') {
+            steps {
+                sh 'docker push "$IMAGE"'
+            }
+        }
     }
 
     post {
@@ -63,7 +74,9 @@ pipeline {
                 emailext(
                     to: authorEmail,
                     subject: "${currentBuild.currentResult}: ${env.STUDENT_ID} #${env.BUILD_NUMBER}",
-                    body: "${env.STUDENT_ID} Jenkins build ${env.BUILD_NUMBER}: ${currentBuild.currentResult}. ${env.BUILD_URL}"
+                    from: 'h0essainr@gmail.com',
+                    body: "${env.STUDENT_ID} Jenkins build ${env.BUILD_NUMBER}: ${currentBuild.currentResult}. ${env.BUILD_URL}",
+                    attachLog: true
                 )
             }
         }
